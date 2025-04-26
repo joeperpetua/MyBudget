@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from "react-router";
 import './index.css'
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 import Layout from './routes/Layout.tsx';
 import Home from './routes/Home.tsx';
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
             </Route>
           </Routes>
         </BrowserRouter>
+        <Toaster position="top-center" richColors />
       </ThemeProvider>
     </SettingsProvider>
   </StrictMode>,

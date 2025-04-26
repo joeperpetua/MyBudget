@@ -2,18 +2,36 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export type CurrencySymbol = '$' | '€' | '£' | '%';
 export type Currency = 'usd' | 'euro' | 'pound';
+export interface BudgetItem {
+  name: string;
+  value: number;
+}
+
+export interface Budget {
+  id: string;
+  name: string;
+  people: BudgetItem[];
+  sharedExpenses: BudgetItem[];
+  savings: BudgetItem[];
+}
 
 interface Settings {
   currency: Currency;
+  budgets: Budget[];
 }
 
 interface SettingsContextType extends Settings {
   setCurrency: (currency: Currency) => void;
+  setBudget: (budget: Budget) => void;
+  removeBudget: (id: string) => void;
 };
 
 const defaultContext: SettingsContextType = {
   currency: "usd",
-  setCurrency: () => { },
+  budgets: [],
+  setCurrency: () => {},
+  setBudget: () => {},
+  removeBudget: () => {},
 };
 
 const SettingsContext = createContext<SettingsContextType>(defaultContext);
@@ -29,7 +47,8 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     const stored = JSON.parse(window.localStorage.getItem('settings') || '{}');
 
     return {
-      currency: stored.currency === undefined ? defaultContext.currency : stored.currency
+      currency: stored.currency === undefined ? defaultContext.currency : stored.currency,
+      budgets: stored.budgets === undefined ? defaultContext.budgets : stored.budgets
     };
   }
 
@@ -40,9 +59,36 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     setSettings(newSettings);
   }
 
+  function setBudget(budget: Budget): void {
+    const budgetIndex = settings.budgets.findIndex(b => b.id === budget.id);
+    let updatedBudgets;
+    
+    if (budgetIndex > -1) {
+      updatedBudgets = [...settings.budgets];
+      updatedBudgets[budgetIndex] = budget;
+    } else {
+      updatedBudgets = [...settings.budgets, budget];
+    }
+
+    const newSettings: Settings = { ...settings, budgets: updatedBudgets };
+
+    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    setSettings(newSettings);
+  }
+
+  function removeBudget(id: string): void {
+    const newSettings: Settings = { ...settings, budgets: settings.budgets.filter(b => b.id !== id) };
+
+    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    setSettings(newSettings);
+  }
+
   const value = {
     currency: settings.currency,
+    budgets: settings.budgets,
     setCurrency,
+    setBudget,
+    removeBudget,
   };
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
