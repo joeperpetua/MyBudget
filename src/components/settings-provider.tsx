@@ -18,19 +18,23 @@ export interface Budget {
 interface Settings {
   currency: Currency;
   budgets: Budget[];
+  currentBudget: Budget | null;
 }
 
 interface SettingsContextType extends Settings {
   setCurrency: (currency: Currency) => void;
   setBudget: (budget: Budget) => void;
+  setCurrentBudget: (budget: Budget) => void;
   removeBudget: (id: string) => void;
 };
 
 const defaultContext: SettingsContextType = {
   currency: "usd",
   budgets: [],
+  currentBudget: null,
   setCurrency: () => {},
   setBudget: () => {},
+  setCurrentBudget: () => {},
   removeBudget: () => {},
 };
 
@@ -48,7 +52,8 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 
     return {
       currency: stored.currency === undefined ? defaultContext.currency : stored.currency,
-      budgets: stored.budgets === undefined ? defaultContext.budgets : stored.budgets
+      budgets: stored.budgets === undefined ? defaultContext.budgets : stored.budgets,
+      currentBudget: stored.currentBudget === undefined ? stored.budgets[0] || null : stored.currentBudget,
     };
   }
 
@@ -76,6 +81,13 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     setSettings(newSettings);
   }
 
+  function setCurrentBudget(budget: Budget): void {
+    const newSettings: Settings = { ...settings, currentBudget: budget };
+
+    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    setSettings(newSettings);
+  }
+
   function removeBudget(id: string): void {
     const newSettings: Settings = { ...settings, budgets: settings.budgets.filter(b => b.id !== id) };
 
@@ -86,8 +98,10 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   const value = {
     currency: settings.currency,
     budgets: settings.budgets,
+    currentBudget: settings.currentBudget,
     setCurrency,
     setBudget,
+    setCurrentBudget,
     removeBudget,
   };
 
@@ -97,8 +111,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 export const useSettings = () => {
   const context = useContext(SettingsContext)
 
-  if (context === undefined)
-    throw new Error("useSettings must be used within a SettingsProvider")
+  if (context === undefined) throw new Error("useSettings must be used within a SettingsProvider")
 
   return context;
 }
