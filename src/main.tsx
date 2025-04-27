@@ -9,6 +9,7 @@ import Layout from './routes/Layout.tsx';
 import Home from './routes/Home.tsx';
 import Budget from './routes/Budget.tsx';
 import { SettingsProvider } from './components/settings-provider.tsx';
+import Prevision from '@/routes/Prevision.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -19,7 +20,7 @@ createRoot(document.getElementById('root')!).render(
             <Route element={<Layout />}>
               <Route index element={<Home />} />
               <Route path='budgets/:id' element={<Budget />} />
-              <Route path='previsions/:id' element={<Budget />} />
+              <Route path='previsions/:id' element={<Prevision />} />
             </Route>
           </Routes>
         </BrowserRouter>

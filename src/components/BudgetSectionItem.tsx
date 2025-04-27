@@ -41,7 +41,7 @@ const BudgetSectionItem: React.FC<BudgetSectionItemProps> = ({ index, name, valu
     <div className='flex items-center justify-between p-4'>
       <H3>{name}</H3>
       <div className='flex items-center gap-2'>
-        <H4 className='mr-2'>{`${value}${currencySymbolMap[currency]}`}</H4>
+        <H4 className='mr-2'>{`${value}${percentual ? '%' : currencySymbolMap[currency]}`}</H4>
         <Button onClick={() => setOpenEditItemDialog(true)}><Pencil /></Button>
         <Button variant={'destructive'} onClick={() => removeItem(index, section)}><X /></Button>
       </div>
