@@ -1,19 +1,30 @@
-import { H1 } from '@/components/ui/typography'
-import { BudgetItem, useSettings } from '@/components/settings-provider';
+import { H1, H3, Lead } from '@/components/ui/typography'
+import { useSettings } from '@/components/settings-provider';
 import { useParams } from 'react-router';
-import { Budget as IBudget } from '@/components/settings-provider';
+import { Budget as IBudget, BudgetItem } from '@/types';
 import BudgetSection from '@/components/BudgetSection';
 import { useEffect } from 'react';
+
+export const getBudget = (budgets: IBudget[], currentBudget: IBudget | null, id: string | undefined) => {
+  if (id === 'current' && currentBudget) return currentBudget;
+  return budgets.find(budget => budget.id === id) || budgets[0];
+};
 
 const Budget = () => {
   const params = useParams();
   const { budgets, currentBudget, setBudget, setCurrentBudget } = useSettings();
-  const budget = params.id === 'current' && currentBudget ? currentBudget : budgets.find(budget => budget.id === params.id);
+  const budget = getBudget(budgets, currentBudget, params.id);
+
+  if (budgets.length === 0) return (
+    <div className='flex flex-col justify-center h-[88vh]'>
+      <H3 className='text-center'>You have no budgets yet, create one in the home page!</H3>
+    </div>
+  )
 
   if (!budget) {
     return (
-      <div className='flex flex-col p-4 min-h-screen'>
-        <H1>Something went wrong</H1>
+      <div className='flex flex-col justify-center h-[88vh]'>
+        <H3 className='text-center'>Something went wrong while loading the budget o.o</H3>
       </div>
     )
   }
@@ -50,9 +61,10 @@ const Budget = () => {
   return (
     <div className='flex flex-col p-4 pb-20 min-h-screen'>
       <H1>{budget.name}</H1>
+      <Lead>Tweak your budget values</Lead>
 
       <BudgetSection 
-        title='People' 
+        title='Incomes' 
         section='people' 
         description='Add a new person to the budget. Specify the name and the net income.'
         items={budget.people}

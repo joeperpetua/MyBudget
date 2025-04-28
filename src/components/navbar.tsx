@@ -19,7 +19,7 @@ const NavbarItem: React.FC<NavbarItemProps> = ({ icon, label, to }) => {
 
 const Navbar = () => {
   return (
-    <div className="fixed bottom-0 left-0 flex justify-between items-center h-25 w-full px-8 bg-background text-primary">
+    <div className="fixed bottom-0 left-0 flex justify-between items-center h-[12vh] w-full px-8 bg-background text-primary">
       <NavbarItem icon={<Home size={32} />} label="Home" to="/" />
       <NavbarItem icon={<ListPlus size={32} />} label="Budget" to="/budgets/current" />
       <NavbarItem icon={<ChartLine size={32} />} label="Prevision" to="/previsions/current" />

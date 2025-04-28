@@ -1,9 +1,9 @@
-import { BudgetItem, useSettings } from "@/components/settings-provider";
+import { useSettings } from "@/components/settings-provider";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { H3, H4, P } from "@/components/ui/typography";
-import { currencySymbolMap } from "@/types";
+import { BudgetItem, currencySymbolMap } from "@/types";
 import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -53,7 +53,7 @@ const BudgetSectionItem: React.FC<BudgetSectionItemProps> = ({ index, name, valu
             <DrawerDescription>Change the entry name and values here. Click save when you are done.</DrawerDescription>
           </DrawerHeader>
 
-          <div className="flex flex-col  gap-2 p-4">
+          <div className="flex flex-col gap-2 p-4">
             <H4>Name</H4>
             <Input
               type="text"

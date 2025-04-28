@@ -1,19 +1,5 @@
+import { Currency, Budget } from "@/types";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-
-export type CurrencySymbol = '$' | '€' | '£' | '%';
-export type Currency = 'usd' | 'euro' | 'pound';
-export interface BudgetItem {
-  name: string;
-  value: number;
-}
-
-export interface Budget {
-  id: string;
-  name: string;
-  people: BudgetItem[];
-  sharedExpenses: BudgetItem[];
-  savings: BudgetItem[];
-}
 
 interface Settings {
   currency: Currency;
@@ -79,6 +65,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 
     window.localStorage.setItem('settings', JSON.stringify(newSettings));
     setSettings(newSettings);
+    setCurrentBudget(budget);
   }
 
   function setCurrentBudget(budget: Budget): void {
@@ -90,6 +77,9 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 
   function removeBudget(id: string): void {
     const newSettings: Settings = { ...settings, budgets: settings.budgets.filter(b => b.id !== id) };
+    if (newSettings.currentBudget?.id === id) {
+      newSettings.currentBudget = newSettings.budgets[0] || null;
+    }
 
     window.localStorage.setItem('settings', JSON.stringify(newSettings));
     setSettings(newSettings);

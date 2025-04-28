@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 interface BudgetListItemProps {
   name: string;
@@ -63,7 +64,7 @@ const Home = () => {
       toast.error("Name cannot be empty");
       return;
     }
-    
+
     const budgetIndex = budgets.findIndex(b => b.id === selectedBudget);
     if (budgetIndex === -1) {
       toast.error("Something went wrong");
@@ -83,10 +84,10 @@ const Home = () => {
       <Lead>Manage or create your budgets</Lead>
       <div className="flex flex-col gap-4 mt-8">
         {budgets.map(budget => (
-          <BudgetListItem 
-            key={budget.id} 
-            id={budget.id} 
-            name={budget.name} 
+          <BudgetListItem
+            key={budget.id}
+            id={budget.id}
+            name={budget.name}
             openRename={() => setShowRenameDialog(true)}
             openDelete={() => setShowDeleteDialog(true)}
             selectItem={() => setSelectedBudget(budget.id)}
@@ -95,26 +96,30 @@ const Home = () => {
         <Button onClick={addBudget}><Plus /> New budget</Button>
       </div>
 
-      <Dialog open={showRenameDialog} onOpenChange={setShowRenameDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename budget</DialogTitle>
-            <DialogDescription>
-              Choose a new name for this budget...
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col justify-center items-center gap-2 ">
-            <Input 
-              type="text" 
-              placeholder="New name" 
-              className="w-4/5" 
-              value={renameInput} 
-              onChange={(e) => setRenameInput(e.target.value)} 
+      <Drawer open={showRenameDialog} onOpenChange={setShowRenameDialog}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Rename budget</DrawerTitle>
+            <DrawerDescription>
+              Choose a new name for this budget. Click save when done.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="flex flex-col justify-center items-center gap-2 py-8 px-4">
+            <Input
+              type="text"
+              placeholder="New name"
+              value={renameInput}
+              onChange={(e) => setRenameInput(e.target.value)}
             />
-            <Button onClick={renameBudget}>Save</Button>
           </div>
-        </DialogContent>
-      </Dialog>
+          <DrawerFooter className="pt-2">
+            <Button onClick={renameBudget}>Save</Button>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>

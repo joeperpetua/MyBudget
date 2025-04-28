@@ -1,70 +1,31 @@
-import { BudgetItem, useSettings } from "@/components/settings-provider";
-import { H1, H2, H3, P } from "@/components/ui/typography";
-import { currencySymbolMap } from "@/types";
+import { useSettings } from "@/components/settings-provider";
+import { H1, H3, Lead } from "@/components/ui/typography";
 import { useEffect } from "react";
 import { useParams } from "react-router";
-
-const calcTotalIncome = (people: BudgetItem[]) => people.reduce((sum, person) => sum + person.value, 0);
-/** 
- * Calculates the contribution of each person based on the percentage passed and their income.
-*/
-const calcPercentage = (people: BudgetItem[], percentage: number) => {
-  return people.map(person => person.value * percentage / 100);
-};
-
-const calcContribution = (totalIncome: number, income: number, expense: number) => {
-  return expense / (totalIncome / income);
-}
-
-const calcBudget = (people: BudgetItem[], sharedExpenses: BudgetItem[], savings: BudgetItem[]) => {
-  const totalIncome = calcTotalIncome(people);
-
-  const calculatedSavings = savings.map(saving => {
-    return { ...saving, value: calcPercentage(people, saving.value) }
-  });
-
-  const calculatedExpenses = people.map(person => {
-    return {
-      name: person.name, expensesContribution: sharedExpenses.map(expense => {
-        return { ...expense, value: calcContribution(person.value, totalIncome, expense.value) };
-      })
-    };
-  });
-
-  const totalExpenses = sharedExpenses.reduce((sum, expense) => sum + expense.value, 0);
-  const totalSavings = calculatedSavings.reduce((sum, saving) => {
-    const currentSavingTotal = saving.value.reduce((sum, value) => sum + value, 0);
-    return sum + currentSavingTotal;
-  }, 0);
-
-
-  console.log({
-    savings: calculatedSavings,
-    sharedExpenses: calculatedExpenses,
-    totalExpenses,
-    totalSavings,
-    total: Number((totalExpenses + totalSavings).toFixed(0)),
-  })
-
-  return {
-    savings: calculatedSavings,
-    sharedExpenses: calculatedExpenses,
-    totalExpenses,
-    totalSavings,
-    total: Number((totalExpenses + totalSavings).toFixed(0)),
-  };
-};
+import PrevisionIncomes from "@/components/PrevisionIncomes";
+import PrevisionContributions from "@/components/PrevisionContributions";
+import PrevisionSavings from "@/components/PrevisionSavings";
+import PrevisionBudgetComposition from "@/components/PrevisionBudgetComposition";
+import PrevisionRemainders from "@/components/PrevisionRemainders";
+import { calcBudget } from "@/lib/math";
+import { getBudget } from "@/routes/Budget";
 
 const Prevision = () => {
   const params = useParams();
-  const { budgets, currentBudget, currency, setCurrentBudget } = useSettings();
-  const budget = params.id === 'current' && currentBudget ? currentBudget : budgets.find(budget => budget.id === params.id);
+  const { budgets, currentBudget, setCurrentBudget } = useSettings();
+  const budget = getBudget(budgets, currentBudget, params.id);
   const budgetContributions = budget && calcBudget(budget.people, budget.sharedExpenses, budget.savings);
+
+  if (budgets.length === 0) return (
+    <div className='flex flex-col justify-center h-[88vh]'>
+      <H3 className='text-center'>You have no budgets yet, create one in the home page!</H3>
+    </div>
+  )
 
   if (!budget) {
     return (
-      <div className='flex flex-col p-4 min-h-screen'>
-        <H1>Something went wrong</H1>
+      <div className='flex flex-col justify-center h-[88vh]'>
+        <H3 className='text-center'>Something went wrong while loading the budget o.o</H3>
       </div>
     )
   }
@@ -77,91 +38,37 @@ const Prevision = () => {
   return (
     <div className='flex flex-col p-4 pb-24 min-h-screen'>
       <H1>{budget.name}</H1>
-      <H2 className="mt-8 border-none">Incomes</H2>
-      <div className="px-4 border rounded-md bg-secondary">
-        {budget.people.map((person, index) => (
-          <div key={index} className="flex justify-between py-4 border-b">
-            <H3>{person.name}</H3>
-            <H3>{`${person.value}${currencySymbolMap[currency]}`}</H3>
-          </div>
-        ))}
-      </div>
+      <Lead>See how your budget will look like</Lead>
 
-      <H2 className="mt-8 border-none">Contributions</H2>
-      <div className="px-4 border rounded-md bg-secondary">
-        {budget.people.map((person, index) => (
-          <div key={index} className="flex justify-between py-4 border-b">
-            <H3>{person.name}</H3>
-            <H3>{`${calcContribution(calcTotalIncome(budget.people), person.value, budgetContributions!.total).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-          </div>
-        ))}
-      </div>
+      <PrevisionIncomes
+        title='Incomes'
+        description='The incomes of each person to be used in the budget.'
+        items={budget.people}
+      />
 
-      <H2 className="mt-8 border-none">Savings</H2>
-      <div className="px-4 border rounded-md bg-secondary">
-        {budgetContributions!.savings.map((saving, index) => (
-          <div key={index} className="flex justify-between py-4 border-b">
-            <H3>{saving.name}</H3>
-            <div className="flex flex-col w-1/2">
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">month</P>
-                <H3>{`${saving.value.reduce((sum, value) => sum + value, 0).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
+      <PrevisionBudgetComposition
+        title="Budget Composition"
+        description="How much each part of the budget takes up."
+        data={budgetContributions}
+      />
 
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">year</P>
-                <H3>{`${(saving.value.reduce((sum, value) => sum + value, 0) * 12).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
+      <PrevisionContributions
+        title='Contributions'
+        description='How much each person contributes to the budget. This will vary on the person income in relation to the sum of all incomes.'
+        items={budgetContributions.peopleContributions}
+      />
 
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">5 year</P>
-                <H3>{`${(saving.value.reduce((sum, value) => sum + value, 0) * 12 * 5).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <PrevisionSavings
+        title='Savings'
+        description='Prevision of the money to be saved for each saving category.'
+        items={budgetContributions.savings}
+      />
 
-      <H2 className="mt-8 border-none">Budget Composition</H2>
-      <div className="px-4 border rounded-md bg-secondary">
-        <div className="flex justify-between py-4 border-b">
-          <H3>Shared Expenses</H3>
-          <H3>{`${budgetContributions!.totalExpenses.toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-        </div>
-        <div className="flex justify-between py-4 border-b">
-          <H3>Savings</H3>
-          <H3>{`${budgetContributions!.totalSavings.toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-        </div>
-        <div className="flex justify-between py-4 border-b">
-          <H3>Total</H3>
-          <H3>{`${budgetContributions!.total.toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-        </div>
-      </div>
-
-      <H2 className="mt-8 border-none">Reminders</H2>
-      <div className="px-4 border rounded-md bg-secondary">
-        {budget.people.map((person, index) => (
-          <div key={index} className="flex justify-between py-4 border-b">
-            <H3>{person.name}</H3>
-            <div className="flex flex-col w-1/2">
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">month</P>
-                <H3>{`${(person.value - calcContribution(calcTotalIncome(budget.people), person.value, budgetContributions!.total)).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
-              
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">year</P>
-                <H3>{`${((person.value - calcContribution(calcTotalIncome(budget.people), person.value, budgetContributions!.total)) * 12).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
-
-              <div className="flex justify-between items-end gap-2">
-                <P className="text-sm text-ring leading-[1.5rem]">5 year</P>
-                <H3>{`${((person.value - calcContribution(calcTotalIncome(budget.people), person.value, budgetContributions!.total)) * 12 * 5).toFixed(0)}${currencySymbolMap[currency]}`}</H3>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <PrevisionRemainders
+        title="Remainders"
+        description="The money of each participant that was not needed to cover the budget."
+        items={budgetContributions.peopleContributions}
+      />
     </div>
   );
 };

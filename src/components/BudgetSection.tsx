@@ -1,10 +1,10 @@
 import BudgetSectionItem from "@/components/BudgetSectionItem";
-import { BudgetItem, useSettings } from "@/components/settings-provider";
+import { useSettings } from "@/components/settings-provider";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { H2, H4, P } from "@/components/ui/typography";
-import { currencySymbolMap } from "@/types";
+import { BudgetItem, currencySymbolMap } from "@/types";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
