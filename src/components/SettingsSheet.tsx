@@ -1,4 +1,10 @@
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Github, Moon, Settings, Sun } from "lucide-react";
 import { useSettings } from "./settings-provider";
 import { useTheme, Theme } from "./theme-provider";
@@ -53,11 +59,29 @@ const SettingsSheet = () => {
           </div>
           <SheetFooter>
             <div className="pt-4">
-              <H3>About</H3>
-              <P>MyBudget is an app targeted to people with multiple sources of income or a group of people joining a budget together (i.e. a couple, house mates, group of friends, etc.).</P>
-              {/* <P>Whether you are planning a budget for a household, a trip with friends, or a joint-project, MyBudget aims to distribute the expenses fairly between all participants.</P> */}
-              <P>The app calculates the contribution in a fair way, so that everyone contributes based on their income.</P>
-              <P>Use cases: household budget, trip budget, joint-project budget, co-working space budget, etc.</P>
+              <Accordion type="single" collapsible>
+                <AccordionItem value="who-for">
+                  <AccordionTrigger>Who is this app for?</AccordionTrigger>
+                  <AccordionContent>
+                    MyBudget is an app targeted to people with multiple sources of income or a group of people joining a budget together (i.e. a couple, house mates, group of friends, etc.).
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="how-work">
+                  <AccordionTrigger>How does it work?</AccordionTrigger>
+                  <AccordionContent>
+                    In the Budget page, add expenses and incomes, then see how the budget is distributes between all participants in the Prevision page.
+                    The app calculates the contribution in a fair way, so that everyone contributes based on their income.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="examples">
+                  <AccordionTrigger>What are the use cases?</AccordionTrigger>
+                  <AccordionContent>
+                    Some use cases could be household budget, trip budget, joint-project budget, co-working space budget, etc.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
             <div className="flex items-center justify-center py-8">
               <a target='_blank' rel='noopener noreferrer' href="https://github.com/joeperpetua/mybudget"><Github /></a>
