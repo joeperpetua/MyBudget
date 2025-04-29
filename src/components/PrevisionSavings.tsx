@@ -28,7 +28,7 @@ const PrevisionSavings: React.FC<PrevisionSavingsProps> = ({ title, description,
             <div className="flex flex-col w-1/2">
               <TimePrevision period="month" value={sumList(saving.value)} />
               <TimePrevision period="year" value={sumList(saving.value) * 12} />
-              <TimePrevision period="5 year" value={sumList(saving.value) * 12} />
+              <TimePrevision period="5 year" value={sumList(saving.value) * 12 * 5} />
             </div>
           </div>
         ))}

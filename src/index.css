@@ -117,7 +117,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-a.active {
-  color: var(--ring);
-}

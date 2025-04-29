@@ -39,7 +39,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     return {
       currency: stored.currency === undefined ? defaultContext.currency : stored.currency,
       budgets: stored.budgets === undefined ? defaultContext.budgets : stored.budgets,
-      currentBudget: stored.currentBudget === undefined ? stored.budgets[0] || null : stored.currentBudget,
+      currentBudget: stored.currentBudget === undefined ? defaultContext.currentBudget : stored.currentBudget,
     };
   }
 

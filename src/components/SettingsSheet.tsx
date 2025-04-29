@@ -4,6 +4,7 @@ import { useSettings } from "./settings-provider";
 import { useTheme, Theme } from "./theme-provider";
 import { H3, P } from "./ui/typography";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Currency } from "@/types";
 
 const SettingsSheet = () => {
   const { theme, setTheme } = useTheme();
