@@ -47,15 +47,24 @@ const BudgetListItem: React.FC<BudgetListItemProps> = ({ name, id, openDelete, o
 
 const Home = () => {
   const { budgets, setBudget, removeBudget } = useSettings();
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const [showRenameDialog, setShowRenameDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedBudget, setSelectedBudget] = useState('');
+  const [addInput, setAddInput] = useState("");
   const [renameInput, setRenameInput] = useState("");
 
   const addBudget = () => {
-    const newBudget = { name: "Untitled budget", id: uuidv4(), people: [], sharedExpenses: [], savings: [] };
+    if (addInput === "") {
+      toast.error("Name cannot be empty");
+      return;
+    }
+
+    const newBudget = { name: addInput, id: uuidv4(), people: [], sharedExpenses: [], savings: [] };
     budgets.push(newBudget);
     setBudget(newBudget);
+    setShowAddDialog(false);
+    setAddInput("");
   };
 
   const renameBudget = () => {
@@ -92,8 +101,33 @@ const Home = () => {
             selectItem={() => setSelectedBudget(budget.id)}
           />
         ))}
-        <Button onClick={addBudget}><Plus /> New budget</Button>
+        <Button onClick={() => setShowAddDialog(true)}><Plus /> New budget</Button>
       </div>
+
+      <Drawer open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Add budget</DrawerTitle>
+            <DrawerDescription>
+              Choose a name for this budget. Click save when done.
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="flex flex-col justify-center items-center gap-2 pb-4 px-4">
+            <Input
+              type="text"
+              placeholder="Budget name"
+              value={addInput}
+              onChange={(e) => setAddInput(e.target.value)}
+            />
+          </div>
+          <DrawerFooter className="pt-2">
+            <Button onClick={addBudget}>Save</Button>
+            <DrawerClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <Drawer open={showRenameDialog} onOpenChange={setShowRenameDialog}>
         <DrawerContent>
@@ -103,7 +137,7 @@ const Home = () => {
               Choose a new name for this budget. Click save when done.
             </DrawerDescription>
           </DrawerHeader>
-          <div className="flex flex-col justify-center items-center gap-2 py-8 px-4">
+          <div className="flex flex-col justify-center items-center gap-2 pb-4 px-4">
             <Input
               type="text"
               placeholder="New name"
