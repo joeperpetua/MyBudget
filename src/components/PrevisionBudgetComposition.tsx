@@ -1,8 +1,7 @@
 import { useSettings } from "@/components/settings-provider";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import InfoTooltip from "@/components/ui/info-tooltip";
 import { H2, H3 } from "@/components/ui/typography";
 import { BudgetContributions, toCurrency } from "@/types";
-import { CircleHelp } from "lucide-react";
 
 interface PrevisionBudgetCompositionProps {
   title: string;
@@ -17,10 +16,7 @@ const PrevisionBudgetComposition: React.FC<PrevisionBudgetCompositionProps> = ({
     <>
       <div className="flex items-center gap-2 mt-8">
         <H2 className="border-none">{title}</H2>
-        <Popover>
-          <PopoverTrigger><CircleHelp size={20} /></PopoverTrigger>
-          <PopoverContent>{description}</PopoverContent>
-        </Popover>
+        <InfoTooltip description={description} />
       </div>
       <div className="px-4 border rounded-md bg-secondary">
         <div className="flex justify-between py-4 border-b">

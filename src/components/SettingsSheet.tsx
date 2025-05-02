@@ -8,7 +8,7 @@ import {
 import { Github, Moon, Settings, Sun } from "lucide-react";
 import { useSettings } from "./settings-provider";
 import { useTheme, Theme } from "./theme-provider";
-import { H3, P } from "./ui/typography";
+import { H3 } from "./ui/typography";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Currency } from "@/types";
 

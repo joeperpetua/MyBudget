@@ -1,8 +1,7 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import InfoTooltip from "@/components/ui/info-tooltip";
 import TimePrevision from "@/components/ui/time-prevision";
 import { H2, H3 } from "@/components/ui/typography";
 import { PeopleContributions } from "@/types";
-import { CircleHelp } from "lucide-react";
 
 interface PrevisionRemaindersProps {
   title: string;
@@ -15,10 +14,7 @@ const PrevisionRemainders: React.FC<PrevisionRemaindersProps> = ({ title, descri
     <>
       <div className="flex items-center gap-2 mt-8">
         <H2 className="border-none">{title}</H2>
-        <Popover>
-          <PopoverTrigger><CircleHelp size={20} /></PopoverTrigger>
-          <PopoverContent>{description}</PopoverContent>
-        </Popover>
+        <InfoTooltip description={description} />
       </div>
       <div className="px-4 border rounded-md bg-secondary">
         {items.map((person, index) => (

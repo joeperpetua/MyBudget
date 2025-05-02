@@ -2,6 +2,7 @@ import BudgetSectionItem from "@/components/BudgetSectionItem";
 import { useSettings } from "@/components/settings-provider";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import InfoTooltip from "@/components/ui/info-tooltip";
 import { Input } from "@/components/ui/input";
 import { H2, H4, P } from "@/components/ui/typography";
 import { BudgetItem, currencySymbolMap } from "@/types";
@@ -13,6 +14,7 @@ interface BudgetSectionProps {
   title: string;
   section: string;
   description: string;
+  drawerHelp: string;
   items: BudgetItem[];
   percentual?: boolean;
   valueLabel: string;
@@ -21,13 +23,14 @@ interface BudgetSectionProps {
   removeItem: (index: number, section: string) => void;
 }
 
-const BudgetSection: React.FC<BudgetSectionProps> = ({ 
-  title, 
-  items, 
-  percentual = false, 
-  section, 
+const BudgetSection: React.FC<BudgetSectionProps> = ({
+  title,
+  items,
+  percentual = false,
+  section,
   description,
-  valueLabel, 
+  drawerHelp,
+  valueLabel,
   addItem,
   updateItem,
   removeItem
@@ -52,20 +55,23 @@ const BudgetSection: React.FC<BudgetSectionProps> = ({
     setNameInput('');
     setValueInput('');
   }
-  
+
   return (
     <div className='mt-8'>
-      <H2>{title}</H2>
+      <div className='flex items-center gap-2'>
+        <H2>{title}</H2>
+        <InfoTooltip description={description} />
+      </div>
       <div className='flex flex-col gap-2 p-4'>
         {items.map((item, index) => (
-          <BudgetSectionItem 
-            key={index} 
+          <BudgetSectionItem
+            key={index}
             index={index}
-            name={item.name} 
+            name={item.name}
             value={item.value}
             valueLabel={valueLabel}
             percentual={percentual}
-            section={section} 
+            section={section}
             removeItem={removeItem}
             updateItem={updateItem}
           />
@@ -77,7 +83,7 @@ const BudgetSection: React.FC<BudgetSectionProps> = ({
         <DrawerContent>
           <DrawerHeader className="text-left">
             <DrawerTitle>Add entry</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
+            <DrawerDescription>{drawerHelp}</DrawerDescription>
           </DrawerHeader>
 
           <div className="flex flex-col  gap-2 p-4">
@@ -99,7 +105,7 @@ const BudgetSection: React.FC<BudgetSectionProps> = ({
               <P className='!m-0 font-bold'>{percentual ? '%' : currencySymbolMap[currency]}</P>
             </div>
           </div>
-          
+
           <DrawerFooter className="pt-2">
             <Button onClick={handleAdd}>Save</Button>
             <DrawerClose asChild>

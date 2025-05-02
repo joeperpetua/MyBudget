@@ -59,14 +59,15 @@ const Budget = () => {
   }
 
   return (
-    <div className='flex flex-col p-4 pb-20 min-h-screen'>
+    <div className='flex flex-col p-4 pb-20 h-full'>
       <H1>{budget.name}</H1>
       <Lead>Tweak your budget values</Lead>
 
       <BudgetSection 
         title='Incomes' 
         section='people' 
-        description='Add a new person to the budget. Specify the name and the net income.'
+        description='The incomes of each person to be used in the budget.'
+        drawerHelp='Add a new person to the budget. Specify the name and the net income.'
         items={budget.people}
         valueLabel='Net Income' 
         addItem={addSectionItem} 
@@ -76,7 +77,8 @@ const Budget = () => {
       <BudgetSection 
         title='Shared Expenses' 
         section='sharedExpenses' 
-        description='Add a new expense to the budget. Specify the name and the total amount for the expense.'
+        description='Fixed expenses to be shared across all participants in the budget.'
+        drawerHelp='Add a new expense to the budget. Specify the name and the total amount for the expense.'
         items={budget.sharedExpenses}
         valueLabel='Amount' 
         addItem={addSectionItem} 
@@ -86,7 +88,8 @@ const Budget = () => {
       <BudgetSection 
         title='Savings' 
         section='savings' 
-        description='Add a new saving to the budget. Specify the name and the income percentage to be saved.'
+        description='Percentual savings to be substracted from the incomes. The percentage will be applied to each particular income and not to the sum of them.'
+        drawerHelp='Add a new saving to the budget. Specify the name and the income percentage to be saved.'
         items={budget.savings}
         percentual={true}
         valueLabel='Income Percentage' 
