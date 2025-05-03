@@ -9,12 +9,18 @@ import PrevisionBudgetComposition from "@/components/PrevisionBudgetComposition"
 import PrevisionRemainders from "@/components/PrevisionRemainders";
 import { calcBudget } from "@/lib/math";
 import { getBudget } from "@/routes/Budget";
+import SettingsSheet from "@/components/SettingsSheet";
 
 const Prevision = () => {
   const params = useParams();
   const { budgets, currentBudget, setCurrentBudget } = useSettings();
   const budget = getBudget(budgets, currentBudget, params.id);
   const budgetContributions = budget && calcBudget(budget.people, budget.sharedExpenses, budget.savings);
+
+  useEffect(() => {
+    if (!budget) return;
+    setCurrentBudget(budget);
+  }, [budget]);
 
   if (budgets.length === 0) return (
     <div className='flex flex-col justify-center h-[88vh]'>
@@ -30,13 +36,9 @@ const Prevision = () => {
     )
   }
 
-  useEffect(() => {
-    if (!budget) return;
-    setCurrentBudget(budget);
-  }, [budget]);
-
   return (
     <div className='flex flex-col p-4 pb-24 min-h-screen'>
+      <SettingsSheet />
       <H1>{budget.name}</H1>
       <Lead>See how your budget will look like</Lead>
 

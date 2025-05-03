@@ -57,9 +57,9 @@ const BudgetSection: React.FC<BudgetSectionProps> = ({
   }
 
   return (
-    <div className='mt-8'>
-      <div className='flex items-center gap-2'>
-        <H2>{title}</H2>
+    <>
+      <div className="flex items-center gap-2 mt-8 border-b-3">
+        <H2 className="border-none">{title}</H2>
         <InfoTooltip description={description} />
       </div>
       <div className='flex flex-col gap-2 p-4'>
@@ -114,7 +114,7 @@ const BudgetSection: React.FC<BudgetSectionProps> = ({
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
-    </div>
+    </>
   )
 }
 

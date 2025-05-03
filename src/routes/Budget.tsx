@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import { Budget as IBudget, BudgetItem } from '@/types';
 import BudgetSection from '@/components/BudgetSection';
 import { useEffect } from 'react';
+import SettingsSheet from '@/components/SettingsSheet';
 
 export const getBudget = (budgets: IBudget[], currentBudget: IBudget | null, id: string | undefined) => {
   if (id === 'current' && currentBudget) return currentBudget;
@@ -60,6 +61,7 @@ const Budget = () => {
 
   return (
     <div className='flex flex-col p-4 pb-20 h-full'>
+      <SettingsSheet />
       <H1>{budget.name}</H1>
       <Lead>Tweak your budget values</Lead>
 
