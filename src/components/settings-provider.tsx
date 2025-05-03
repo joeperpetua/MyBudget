@@ -1,5 +1,6 @@
 import { Currency, Budget } from "@/types";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { Preferences } from '@capacitor/preferences';
 
 interface Settings {
   currency: Currency;
@@ -8,20 +9,20 @@ interface Settings {
 }
 
 interface SettingsContextType extends Settings {
-  setCurrency: (currency: Currency) => void;
-  setBudget: (budget: Budget) => void;
-  setCurrentBudget: (budget: Budget) => void;
-  removeBudget: (id: string) => void;
+  setCurrency: (currency: Currency) => Promise<void>;
+  setBudget: (budget: Budget) => Promise<void>;
+  setCurrentBudget: (budget: Budget) => Promise<void>;
+  removeBudget: (id: string) => Promise<void>;
 };
 
 const defaultContext: SettingsContextType = {
   currency: "usd",
   budgets: [],
   currentBudget: null,
-  setCurrency: () => {},
-  setBudget: () => {},
-  setCurrentBudget: () => {},
-  removeBudget: () => {},
+  setCurrency: () => Promise.resolve(),
+  setBudget: () => Promise.resolve(),
+  setCurrentBudget: () => Promise.resolve(),
+  removeBudget: () => Promise.resolve(),
 };
 
 const SettingsContext = createContext<SettingsContextType>(defaultContext);
@@ -31,10 +32,19 @@ type SettingsProviderProps = {
 };
 
 export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<Settings>(readSettings());
+  const [settings, setSettings] = useState<Settings>({
+    currency: defaultContext.currency, 
+    budgets: defaultContext.budgets, 
+    currentBudget: defaultContext.currentBudget
+  });
 
-  function readSettings(): Settings {
-    const stored = JSON.parse(window.localStorage.getItem('settings') || '{}');
+  useEffect(() => {
+    readSettings().then(setSettings);
+  }, []);
+
+  async function readSettings(): Promise<Settings> {
+    const pref = await Preferences.get({ key: 'settings' });
+    const stored = JSON.parse(pref.value || '{}');
 
     return {
       currency: stored.currency === undefined ? defaultContext.currency : stored.currency,
@@ -43,14 +53,14 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     };
   }
 
-  function setCurrency(value: Currency): void {
+  async function setCurrency(value: Currency): Promise<void> {
     const newSettings: Settings = { ...settings, currency: value };
 
-    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    await Preferences.set({ key: 'settings', value: JSON.stringify(newSettings) });
     setSettings(newSettings);
   }
 
-  function setBudget(budget: Budget): void {
+  async function setBudget(budget: Budget): Promise<void> {
     const budgetIndex = settings.budgets.findIndex(b => b.id === budget.id);
     let updatedBudgets;
     
@@ -63,25 +73,25 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
 
     const newSettings: Settings = { ...settings, budgets: updatedBudgets };
 
-    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    await Preferences.set({ key: 'settings', value: JSON.stringify(newSettings) });
     setSettings(newSettings);
     setCurrentBudget(budget);
   }
 
-  function setCurrentBudget(budget: Budget): void {
+  async function setCurrentBudget(budget: Budget): Promise<void> {
     const newSettings: Settings = { ...settings, currentBudget: budget };
 
-    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    await Preferences.set({ key: 'settings', value: JSON.stringify(newSettings) });
     setSettings(newSettings);
   }
 
-  function removeBudget(id: string): void {
+  async function removeBudget(id: string): Promise<void> {
     const newSettings: Settings = { ...settings, budgets: settings.budgets.filter(b => b.id !== id) };
     if (newSettings.currentBudget?.id === id) {
       newSettings.currentBudget = newSettings.budgets[0] || null;
     }
 
-    window.localStorage.setItem('settings', JSON.stringify(newSettings));
+    await Preferences.set({ key: 'settings', value: JSON.stringify(newSettings) });
     setSettings(newSettings);
   }
 
